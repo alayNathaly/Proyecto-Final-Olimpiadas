@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Proyecto Final Olimpiadas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container my-4">
+    <h1 class="mb-4">Proyecto Final Olimpiadas</h1>
+
+    <!-- ========================================================= -->
+    <!-- 1. CREAR ATLETA                                          -->
+    <!-- ========================================================= -->
+    <div class="card mb-4">
+        <div class="card-header fw-bold">Crear atleta</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="nombre">Nombre:</label>
+                    <input id="nombre" class="form-control" type="text">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="edad">Edad:</label>
+                    <input id="edad" class="form-control" type="number">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="peso">Peso (kg):</label>
+                    <input id="peso" class="form-control" type="number" step="0.1">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label" for="altura">Altura (cm):</label>
+                    <input id="altura" class="form-control" type="number" step="0.1">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="disciplina">Disciplina / deporte:</label>
+                    <input id="disciplina" class="form-control" type="text">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="departamento">Departamento en Guatemala:</label>
+                    <input id="departamento" class="form-control" type="text">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label" for="nacionalidad">Nacionalidad:</label>
+                    <input id="nacionalidad" class="form-control" type="text">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="fechaIngreso">Fecha de ingreso al comité:</label>
+                    <input id="fechaIngreso" class="form-control" type="date">
+                </div>
+                <div class="col-md-4 d-grid align-items-end">
+                    <button class="btn btn-primary mt-4" onclick="crearAtleta()">Guardar atleta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 2. CONSULTAR / EXPORTAR / IMPORTAR ATLETAS               -->
+    <!-- ========================================================= -->
+    <div class="card mb-4">
+        <div class="card-header fw-bold">Consultar, editar o eliminar atletas</div>
+        <div class="card-body">
+            <div class="mb-3 d-flex flex-wrap gap-2">
+                <button class="btn btn-outline-primary" onclick="cargarAtletasParaListas()">Cargar atletas</button>
+                <button class="btn btn-outline-success" onclick="exportarAtletasJson()">Exportar atletas a JSON</button>
+                <button class="btn btn-outline-secondary" onclick="importarAtletasJson()">Importar atletas desde JSON</button>
+            </div>
+            <label class="form-label" for="listaAtletas">Datos de atletas (JSON):</label>
+            <textarea id="listaAtletas" class="form-control" rows="6"></textarea>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 3. REGISTRAR SESIÓN DE ENTRENAMIENTO                     -->
+    <!-- ========================================================= -->
+    <div class="card mb-4">
+        <div class="card-header fw-bold">Registrar sesión de entrenamiento</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label" for="ses_atleta_select">Seleccionar atleta:</label>
+                    <select id="ses_atleta_select" class="form-select">
+                        <option value="">-- Selecciona un atleta --</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="ses_fecha">Fecha:</label>
+                    <input id="ses_fecha" class="form-control" type="date">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="ses_tipo">Tipo de entrenamiento:</label>
+                    <input id="ses_tipo" class="form-control" type="text" placeholder="pesas, carrera, natación...">
+                </div>
+            </div>
+
+            <hr>
+
+            <p class="mt-2 mb-1">¿Cómo medirás el rendimiento?</p>
+            <div class="row">
+                <div class="col-md-6 d-flex align-items-center gap-2">
+                    <input id="modo_tiempo" type="radio" name="ses_modo" value="tiempo">
+                    <label for="modo_tiempo" class="mb-0">Tiempo (minutos y segundos)</label>
+                </div>
+                <div class="col-md-6 d-flex align-items-center gap-2">
+                    <input id="modo_peso" type="radio" name="ses_modo" value="peso" checked>
+                    <label for="modo_peso" class="mb-0">Peso (kg)</label>
+                </div>
+            </div>
+
+            <!-- Campos para tiempo -->
+            <div id="tiempo_fields" class="row g-3 mt-2">
+                <div class="col-md-3">
+                    <label class="form-label" for="ses_min">Minutos:</label>
+                    <input id="ses_min" class="form-control" type="number" min="0" value="0">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="ses_seg">Segundos:</label>
+                    <input id="ses_seg" class="form-control" type="number" min="0" max="59" value="0">
+                </div>
+            </div>
+
+            <!-- Campos para peso -->
+            <div id="peso_fields" class="row g-3 mt-2">
+                <div class="col-md-4">
+                    <label class="form-label" for="ses_peso">Peso levantado (kg):</label>
+                    <input id="ses_peso" class="form-control" type="number" step="0.5">
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <label class="form-label" for="ses_nota">Descripción / Prueba (opcional):</label>
+                <textarea id="ses_nota" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="row g-3 mt-3">
+                <div class="col-md-4">
+                    <label class="form-label" for="ses_ubicacion">Ubicación:</label>
+                    <select id="ses_ubicacion" class="form-select">
+                        <option value="nacional">Nacional</option>
+                        <option value="internacional">Internacional</option>
+                    </select>
+                </div>
+                <div id="ses_pais_div" class="col-md-4">
+                    <label class="form-label" for="ses_pais">País (si es internacional):</label>
+                    <input id="ses_pais" class="form-control" type="text"
+                           placeholder="Guatemala, México, etc.">
+                </div>
+                <div class="col-md-4 d-grid align-items-end">
+                    <button class="btn btn-success mt-4" onclick="crearSesion()">Guardar sesión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 4. CONSULTAR SESIONES POR RANGO                          -->
+    <!-- ========================================================= -->
+    <div class="card mb-4">
+        <div class="card-header fw-bold">Consultar sesiones por atleta y rango de fechas</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label" for="filtro_athlete_select">Atleta:</label>
+                    <select id="filtro_athlete_select" class="form-select">
+                        <option value="">-- Selecciona un atleta --</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="filtro_inicio">Inicio:</label>
+                    <input id="filtro_inicio" class="form-control" type="date">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="filtro_fin">Fin:</label>
+                    <input id="filtro_fin" class="form-control" type="date">
+                </div>
+                <div class="col-md-2 d-grid align-items-end">
+                    <button class="btn btn-primary mt-4" onclick="buscarSesionesRango()">Buscar</button>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <label class="form-label" for="listaSesiones">Sesiones encontradas (JSON):</label>
+                <textarea id="listaSesiones" class="form-control" rows="6">[]</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const baseUrl = window.location.origin;
+
+    // ======================= ATLETAS =======================
+
+    async function crearAtleta() {
+        const body = {
+            nombre: document.getElementById('nombre').value,
+            edad: parseInt(document.getElementById('edad').value || '0'),
+            peso: parseFloat(document.getElementById('peso').value || '0'),
+            altura: parseFloat(document.getElementById('altura').value || '0'),
+            disciplina: document.getElementById('disciplina').value,
+            departamento: document.getElementById('departamento').value,
+            nacionalidad: document.getElementById('nacionalidad').value,
+            fechaIngreso: document.getElementById('fechaIngreso').value
+        };
+
+        try {
+            const resp = await fetch(`${baseUrl}/athletes`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+
+            if (!resp.ok) {
+                const txt = await resp.text();
+                alert('Error al crear atleta: ' + txt);
+                return;
+            }
+
+            const data = await resp.json();
+            alert('Atleta creado con ID: ' + data.id);
+            await cargarAtletasParaListas();
+        } catch (e) {
+            console.error(e);
+            alert('Error de conexión al crear atleta.');
+        }
+    }
+
+    async function cargarAtletasParaListas() {
+        try {
+            const resp = await fetch(`${baseUrl}/athletes`);
+            if (!resp.ok) throw new Error('Respuesta no OK');
+
+            const atletas = await resp.json();
+
+            // textarea
+            const txt = document.getElementById('listaAtletas');
+            txt.value = JSON.stringify(atletas, null, 2);
+
+            // combos
+            const selSesion = document.getElementById('ses_atleta_select');
+            const selFiltro = document.getElementById('filtro_athlete_select');
+
+            [selSesion, selFiltro].forEach(sel => {
+                sel.innerHTML = '<option value="">-- Selecciona un atleta --</option>';
+                atletas.forEach(a => {
+                    const opt = document.createElement('option');
+                    opt.value = a.id;
+                    opt.textContent = `${a.id} - ${a.nombre}`;
+                    sel.appendChild(opt);
+                });
+            });
+
+        } catch (e) {
+            console.error(e);
+            alert('No se pudieron cargar los atletas para las listas.');
+        }
+    }
+
+    function exportarAtletasJson() {
+        const contenido = document.getElementById('listaAtletas').value || '[]';
+        const blob = new Blob([contenido], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'atletas.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    async function importarAtletasJson() {
+        const texto = document.getElementById('listaAtletas').value;
+        if (!texto.trim()) {
+            alert('No hay JSON para importar.');
+            return;
+        }
+        try {
+            const arreglo = JSON.parse(texto);
+            if (!Array.isArray(arreglo)) {
+                alert('El JSON debe ser un arreglo de atletas.');
+                return;
+            }
+            for (const a of arreglo) {
+                await fetch(`${baseUrl}/athletes`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(a)
+                });
+            }
+            alert('Atletas importados.');
+            await cargarAtletasParaListas();
+        } catch (e) {
+            console.error(e);
+            alert('Error al importar atletas. ¿El JSON es válido?');
+        }
+    }
+
+    // ======================= SESIONES =======================
+
+    async function crearSesion() {
+        const athleteId = document.getElementById('ses_atleta_select').value;
+        const fecha = document.getElementById('ses_fecha').value;
+        const tipo = document.getElementById('ses_tipo').value.trim();
+        const notaInput = document.getElementById('ses_nota').value.trim();
+        const modo = [...document.getElementsByName('ses_modo')].find(r => r.checked).value;
+
+        if (!athleteId || !fecha || !tipo) {
+            alert('Falta el atleta, la fecha o el tipo de entrenamiento.');
+            return;
+        }
+
+        let valor;
+        let unidad;
+        let notaExtra = '';
+
+        if (modo === 'tiempo') {
+            const min = parseInt(document.getElementById('ses_min').value || '0', 10);
+            const seg = parseInt(document.getElementById('ses_seg').value || '0', 10);
+            valor = min * 60 + seg;
+            unidad = 'seg';
+            notaExtra = `Tiempo total = ${valor} seg`;
+        } else {
+            valor = parseFloat(document.getElementById('ses_peso').value);
+            if (isNaN(valor)) {
+                alert('Ingresa el peso levantado en kg.');
+                return;
+            }
+            unidad = 'kg';
+            notaExtra = 'Peso en kg';
+        }
+
+        let nota = notaInput;
+        if (notaExtra) {
+            nota = nota ? `${nota} | ${notaExtra}` : notaExtra;
+        }
+
+        const ubicacion = document.getElementById('ses_ubicacion').value;
+        let pais = document.getElementById('ses_pais').value.trim();
+        if (ubicacion === 'nacional') {
+            pais = '';
+        }
+
+        const body = {
+            fecha,
+            tipo,
+            valor,
+            unidad,
+            nota,
+            ubicacion,
+            pais,
+            athlete: {id: Number(athleteId)}
+        };
+
+        try {
+            const resp = await fetch(`${baseUrl}/sessions`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+
+            if (!resp.ok) {
+                const txt = await resp.text();
+                alert('Error al crear sesión: ' + txt);
+                return;
+            }
+
+            const data = await resp.json();
+            alert('Sesión creada con ID: ' + data.id);
+        } catch (err) {
+            console.error(err);
+            alert('Error de conexión al crear la sesión.');
+        }
+    }
+
+    async function buscarSesionesRango() {
+        const id = document.getElementById('filtro_athlete_select').value;
+        const inicio = document.getElementById('filtro_inicio').value;
+        const fin = document.getElementById('filtro_fin').value;
+
+        if (!id || !inicio || !fin) {
+            alert('Selecciona atleta, fecha de inicio y fin.');
+            return;
+        }
+
+        try {
+            const url = `${baseUrl}/sessions/athlete/${id}/range?inicio=${inicio}&fin=${fin}`;
+            const resp = await fetch(url);
+            if (!resp.ok) {
+                const txt = await resp.text();
+                console.error(txt);
+                alert('Error al buscar sesiones.');
+                return;
+            }
+            const data = await resp.json();
+            document.getElementById('listaSesiones').value = JSON.stringify(data, null, 2);
+        } catch (e) {
+            console.error(e);
+            alert('Error al buscar sesiones.');
+        }
+    }
+
+    // ======================= INICIALIZACIÓN =======================
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Mostrar/ocultar campos según tiempo/peso
+        const radios = document.querySelectorAll('input[name="ses_modo"]');
+        function actualizarModo() {
+            const modo = document.querySelector('input[name="ses_modo"]:checked').value;
+            document.getElementById('tiempo_fields').style.display = modo === 'tiempo' ? 'block' : 'none';
+            document.getElementById('peso_fields').style.display = modo === 'peso' ? 'block' : 'none';
+        }
+        radios.forEach(r => r.addEventListener('change', actualizarModo));
+        actualizarModo();
+
+        // Mostrar país solo si ubicación = internacional
+        const ubicacionSelect = document.getElementById('ses_ubicacion');
+        const paisDiv = document.getElementById('ses_pais_div');
+        function actualizarPais() {
+            paisDiv.style.display = ubicacionSelect.value === 'internacional' ? 'block' : 'none';
+        }
+        ubicacionSelect.addEventListener('change', actualizarPais);
+        actualizarPais();
+
+        // Cargar atletas al iniciar
+        cargarAtletasParaListas();
+    });
+</script>
+</body>
+</html>
